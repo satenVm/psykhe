@@ -129,27 +129,7 @@ export default function Concepts() {
         .nav-link:hover { color: #b8a98c; }
       `}</style>
 
-      {/* NAVBAR */}
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '1.5rem 3rem',
-        borderBottom: '1px solid rgba(232,226,213,0.07)',
-        background: 'rgba(8,8,8,0.92)',
-        backdropFilter: 'blur(12px)',
-      }}>
-        <a href="/" style={{ fontFamily: "'Space Mono', monospace", fontSize: '13px', letterSpacing: '0.3em', color: '#b8a98c', textDecoration: 'none' }}>PSYKHE</a>
-        <div style={{ display: 'flex', gap: '2.5rem' }}>
-          {[
-            { label: 'Concepts', href: '/concepts' },
-            { label: 'Theories', href: '/theories' },
-            { label: 'Archive', href: '/archive' },
-            { label: 'About', href: '/about' },
-          ].map(item => (
-            <a key={item.label} href={item.href} className="nav-link">{item.label}</a>
-          ))}
-        </div>
-      </nav>
+
 
       <main style={{ background: '#080808', minHeight: '100vh', color: '#e8e2d5', fontFamily: "'Cormorant Garamond', Georgia, serif", padding: '8rem 3rem 4rem' }}>
 

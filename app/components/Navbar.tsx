@@ -1,50 +1,28 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-
-const translations = {
-  en: {
-    concepts: 'Concepts',
-    theories: 'Theories',
-    archive: 'Archive',
-    about: 'About',
-  },
-  hy: {
-    concepts: 'Հասկացություններ',
-    theories: 'Տեսություններ',
-    archive: 'Արխիվ',
-    about: 'Մեր մասին',
-  },
-  ru: {
-    concepts: 'Концепции',
-    theories: 'Теории',
-    archive: 'Архив',
-    about: 'О нас',
-  },
-}
+import { useLang } from '../context/LangContext'
 
 type Lang = 'en' | 'hy' | 'ru'
+
+const navTranslations = {
+  en: { concepts: 'Concepts', theories: 'Theories', archive: 'Archive', about: 'About' },
+  hy: { concepts: 'Հասկացություններ', theories: 'Տեսություններ', archive: 'Արխիվ', about: 'Մեր մասին' },
+  ru: { concepts: 'Концепции', theories: 'Теории', archive: 'Архив', about: 'О нас' },
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [lang, setLang] = useState<Lang>('en')
+  const { lang, setLang } = useLang()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
-    const saved = localStorage.getItem('lang') as Lang
-    if (saved) setLang(saved)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const changeLang = (l: Lang) => {
-    setLang(l)
-    localStorage.setItem('lang', l)
-    setMenuOpen(false)
-  }
-
-  const t = translations[lang]
+  const t = navTranslations[lang]
 
   const navLinks = [
     { label: t.concepts, href: '/concepts' },
@@ -81,28 +59,25 @@ export default function Navbar() {
       }}>
         <a href="/" style={{ fontFamily: "'Space Mono', monospace", fontSize: '13px', letterSpacing: '0.3em', color: '#4a7a4a', textDecoration: 'none' }}>PSYKHE</a>
 
-        {/* Desktop */}
         <div className="desktop-nav">
           {navLinks.map(item => (
             <a key={item.href} href={item.href} className="nav-link">{item.label}</a>
           ))}
           <div style={{ display: 'flex', gap: '4px', marginLeft: '1rem' }}>
             {(['en', 'hy', 'ru'] as Lang[]).map(l => (
-              <button key={l} className={`lang-btn ${lang === l ? 'active' : ''}`} onClick={() => changeLang(l)}>
+              <button key={l} className={`lang-btn ${lang === l ? 'active' : ''}`} onClick={() => setLang(l)}>
                 {l.toUpperCase()}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Hamburger */}
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
           <span style={{ display: 'block', width: '22px', height: '1px', background: '#4a7a4a', transition: 'all 0.3s', transform: menuOpen ? 'rotate(45deg) translate(0px, 6px)' : 'none' }} />
           <span style={{ display: 'block', width: '22px', height: '1px', background: '#4a7a4a', transition: 'all 0.3s', opacity: menuOpen ? 0 : 1 }} />
           <span style={{ display: 'block', width: '22px', height: '1px', background: '#4a7a4a', transition: 'all 0.3s', transform: menuOpen ? 'rotate(-45deg) translate(0px, -6px)' : 'none' }} />
         </button>
 
-        {/* Mobile Menu */}
         {menuOpen && (
           <div style={{ position: 'fixed', top: '60px', left: 0, right: 0, background: 'rgba(240,244,240,0.98)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(74,122,74,0.1)', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', zIndex: 99, animation: 'fadeIn 0.3s ease' }}>
             {navLinks.map(item => (
@@ -112,7 +87,7 @@ export default function Navbar() {
             ))}
             <div style={{ display: 'flex', gap: '4px' }}>
               {(['en', 'hy', 'ru'] as Lang[]).map(l => (
-                <button key={l} className={`lang-btn ${lang === l ? 'active' : ''}`} onClick={() => changeLang(l)}>
+                <button key={l} className={`lang-btn ${lang === l ? 'active' : ''}`} onClick={() => { setLang(l); setMenuOpen(false) }}>
                   {l.toUpperCase()}
                 </button>
               ))}

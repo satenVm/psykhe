@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { LangProvider } from './context/LangContext'
 import Navbar from './components/Navbar'
 import './globals.css'
 
@@ -9,14 +10,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body style={{ background: '#f0f4f0', margin: 0, padding: 0 }}>
-        <Navbar />
-        {children}
+        <LangProvider>
+          <Navbar />
+          {children}
+        </LangProvider>
       </body>
     </html>
   )

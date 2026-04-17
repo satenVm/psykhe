@@ -2,21 +2,55 @@
 
 import { useState, useEffect } from 'react'
 
+const translations = {
+  en: {
+    concepts: 'Concepts',
+    theories: 'Theories',
+    archive: 'Archive',
+    about: 'About',
+  },
+  hy: {
+    concepts: 'Հասկացություններ',
+    theories: 'Տեսություններ',
+    archive: 'Արխիվ',
+    about: 'Մեր մասին',
+  },
+  ru: {
+    concepts: 'Концепции',
+    theories: 'Теории',
+    archive: 'Архив',
+    about: 'О нас',
+  },
+}
+
+type Lang = 'en' | 'hy' | 'ru'
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [lang, setLang] = useState<Lang>('en')
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
+    const saved = localStorage.getItem('lang') as Lang
+    if (saved) setLang(saved)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const changeLang = (l: Lang) => {
+    setLang(l)
+    localStorage.setItem('lang', l)
+    setMenuOpen(false)
+  }
+
+  const t = translations[lang]
+
   const navLinks = [
-    { label: 'Concepts', href: '/concepts' },
-    { label: 'Theories', href: '/theories' },
-    { label: 'Archive', href: '/archive' },
-    { label: 'About', href: '/about' },
+    { label: t.concepts, href: '/concepts' },
+    { label: t.theories, href: '/theories' },
+    { label: t.archive, href: '/archive' },
+    { label: t.about, href: '/about' },
   ]
 
   return (
@@ -26,6 +60,9 @@ export default function Navbar() {
         .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
         .nav-link { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(26,42,26,0.45); text-decoration: none; text-transform: uppercase; transition: color 0.3s ease; }
         .nav-link:hover { color: #4a7a4a; }
+        .lang-btn { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.15em; background: none; border: 1px solid rgba(74,122,74,0.2); color: rgba(26,42,26,0.4); padding: 0.3rem 0.6rem; cursor: pointer; transition: all 0.3s; text-transform: uppercase; }
+        .lang-btn:hover { border-color: #4a7a4a; color: #4a7a4a; }
+        .lang-btn.active { background: #4a7a4a; border-color: #4a7a4a; color: #f0f4f0; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @media (max-width: 768px) {
           .desktop-nav { display: none !important; }
@@ -44,34 +81,42 @@ export default function Navbar() {
       }}>
         <a href="/" style={{ fontFamily: "'Space Mono', monospace", fontSize: '13px', letterSpacing: '0.3em', color: '#4a7a4a', textDecoration: 'none' }}>PSYKHE</a>
 
+        {/* Desktop */}
         <div className="desktop-nav">
           {navLinks.map(item => (
-            <a key={item.label} href={item.href} className="nav-link">{item.label}</a>
+            <a key={item.href} href={item.href} className="nav-link">{item.label}</a>
           ))}
+          <div style={{ display: 'flex', gap: '4px', marginLeft: '1rem' }}>
+            {(['en', 'hy', 'ru'] as Lang[]).map(l => (
+              <button key={l} className={`lang-btn ${lang === l ? 'active' : ''}`} onClick={() => changeLang(l)}>
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
 
+        {/* Hamburger */}
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
           <span style={{ display: 'block', width: '22px', height: '1px', background: '#4a7a4a', transition: 'all 0.3s', transform: menuOpen ? 'rotate(45deg) translate(0px, 6px)' : 'none' }} />
           <span style={{ display: 'block', width: '22px', height: '1px', background: '#4a7a4a', transition: 'all 0.3s', opacity: menuOpen ? 0 : 1 }} />
           <span style={{ display: 'block', width: '22px', height: '1px', background: '#4a7a4a', transition: 'all 0.3s', transform: menuOpen ? 'rotate(-45deg) translate(0px, -6px)' : 'none' }} />
         </button>
 
+        {/* Mobile Menu */}
         {menuOpen && (
-          <div style={{
-            position: 'fixed', top: '60px', left: 0, right: 0,
-            background: 'rgba(240,244,240,0.98)',
-            backdropFilter: 'blur(20px)',
-            borderBottom: '1px solid rgba(74,122,74,0.1)',
-            padding: '2rem',
-            display: 'flex', flexDirection: 'column', gap: '1.5rem',
-            zIndex: 99,
-            animation: 'fadeIn 0.3s ease',
-          }}>
+          <div style={{ position: 'fixed', top: '60px', left: 0, right: 0, background: 'rgba(240,244,240,0.98)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(74,122,74,0.1)', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', zIndex: 99, animation: 'fadeIn 0.3s ease' }}>
             {navLinks.map(item => (
-              <a key={item.label} href={item.href} onClick={() => setMenuOpen(false)} style={{ fontFamily: "'Space Mono', monospace", fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(26,42,26,0.7)', textDecoration: 'none', textTransform: 'uppercase' }}>
+              <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)} style={{ fontFamily: "'Space Mono', monospace", fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(26,42,26,0.7)', textDecoration: 'none', textTransform: 'uppercase' }}>
                 {item.label}
               </a>
             ))}
+            <div style={{ display: 'flex', gap: '4px' }}>
+              {(['en', 'hy', 'ru'] as Lang[]).map(l => (
+                <button key={l} className={`lang-btn ${lang === l ? 'active' : ''}`} onClick={() => changeLang(l)}>
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </nav>
